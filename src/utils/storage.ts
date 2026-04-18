@@ -1,36 +1,68 @@
-import type { HistoryItem } from '../types'
+import type { CounterState, HistoryItem } from '../types';
 
-const STORAGE_KEY = 'sayac-counter'
-const HISTORY_KEY = 'sayac-history'
-const THEME_KEY = 'sayac-theme'
+const STORAGE_KEY = 'sayac-44664-state';
+const MAX_HISTORY_ITEMS = 5;
 
-export function getStoredCount(): number {
-  const saved = localStorage.getItem(STORAGE_KEY)
-  return saved ? parseInt(saved, 10) : 0
-}
-
-export function setStoredCount(count: number): void {
-  localStorage.setItem(STORAGE_KEY, count.toString())
-}
-
-export function getStoredHistory(): HistoryItem[] {
-  const saved = localStorage.getItem(HISTORY_KEY)
-  if (!saved) return []
+export function loadState(): CounterState | null {
   try {
-    return JSON.parse(saved)
-  } catch {
-    return []
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (error) {
+    console.error('Failed to load state from localStorage:', error);
+  }
+  return null;
+}
+
+export function saveState(state: CounterState): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save state to localStorage:', error);
   }
 }
 
-export function setStoredHistory(history: HistoryItem[]): void {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
+export function createHistoryItem(
+  action: HistoryItem['action'],
+  value: number
+): HistoryItem {
+  return {
+    id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    action,
+    value,
+    timestamp: Date.now(),
+  };
 }
 
-export function getStoredTheme(): 'light' | 'dark' {
-  return (localStorage.getItem(THEME_KEY) as 'light' | 'dark') || 'light'
+export function addToHistory(
+  history: HistoryItem[],
+  item: HistoryItem
+): HistoryItem[] {
+  const newHistory = [item, ...history];
+  return newHistory.slice(0, MAX_HISTORY_ITEMS);
 }
 
-export function setStoredTheme(theme: 'light' | 'dark'): void {
-  localStorage.setItem(THEME_KEY, theme)
+export function formatTimestamp(timestamp: number): string {
+  const date = new Date(timestamp);
+  return date.toLocaleString('tr-TR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+export function getActionLabel(action: HistoryItem['action']): string {
+  switch (action) {
+    case 'increment':
+      return 'Artırıldı';
+    case 'decrement':
+      return 'Azaltıldı';
+    case 'reset':
+      return 'Sıfırlandı';
+    default:
+      return 'İşlem';
+  }
 }

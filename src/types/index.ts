@@ -1,7 +1,13 @@
-export interface HistoryItem {
-  id: string
-  type: 'increment' | 'decrement' | 'reset'
-  value: number
-  previousValue: number
-  timestamp: number
+export interface CounterState {
+  value: number;
+  history: HistoryItem[];
 }
+
+export interface HistoryItem {
+  id: string;
+  action: 'increment' | 'decrement' | 'reset';
+  value: number;
+  timestamp: number;
+}
+
+export type Theme = 'light' | 'dark';
