@@ -1,0 +1,123 @@
+{
+  "STORIES_JSON": [
+    {
+      "id": "US-001",
+      "title": "Proje Kurulumu ve Tasarım Sistemi",
+      "description": "Vite+React+TypeScript projesi için tasarım token'ları (renk paleti, tipografi, spacing, border-radius), Tailwind CSS yapılandırması, TypeScript tipleri (CounterState, HistoryRecord, Theme), localStorage yardımcı fonksiyonları (storage.ts) ve temel proje yapısının oluşturulması.",
+      "acceptanceCriteria": [
+        "TypeScript strict mode etkin",
+        "CounterState, HistoryRecord, Theme tipleri tanımlı",
+        "localStorage okuma/yazma fonksiyonları çalışıyor",
+        "Tailwind config tasarım token'larını kullanıyor",
+        "Tests pass ve Typecheck passes"
+      ],
+      "depends_on": [],
+      "screens": [],
+      "scope_files": [
+        "src/types/index.ts",
+        "src/utils/storage.ts",
+        "src/index.css",
+        "tailwind.config.js",
+        "tsconfig.json",
+        "package.json"
+      ],
+      "shared_files": [],
+      "scope_description": "Proje kurulumu, tipler, localStorage util'leri ve Tailwind tasarım token'ları. UI bileşenleri YOK."
+    },
+    {
+      "id": "US-002",
+      "title": "Sayaç Değeri ve Kontroller",
+      "description": "CounterDisplay bileşeni (sayı gösterimi, aria-live), CounterControls bileşeni (Artır/Azalt/Sıfırla butonları, aria-label, min 44x44px touch target), useCounter hook (value state, increment/decrement/reset, localStorage senkronizasyonu), useHistory hook (son 5 işlem, FIFO, timestamp), tarih formatlaması (GG.AA.YYYY SS:dd Türkçe).",
+      "acceptanceCriteria": [
+        "Artır butonu değeri +1 artırır, localStorage'a kaydeder",
+        "Azalt butonu değeri -1 azaltır, localStorage'a kaydeder",
+        "Sıfırla butonu değeri 0'a getirir",
+        "Her işlem geçmişe eklenir (max 5 kayıt, en yenisi üstte)",
+        "Boş geçmiş durumunda 'Henüz işlem yapılmadı.' mesajı gösterilir",
+        "Tests pass ve Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "screens": ["0f6a744675b2419882f316a7e1c803f9", "c4366713bcf14dd494c8e978d19914ff"],
+      "scope_files": [
+        "src/hooks/useCounter.ts",
+        "src/hooks/useHistory.ts",
+        "src/components/CounterDisplay.tsx",
+        "src/components/CounterControls.tsx",
+        "src/components/HistoryPanel.tsx"
+      ],
+      "shared_files": ["src/types/index.ts", "src/utils/storage.ts"],
+      "scope_description": "Sayaç bileşenleri, counter/history hooks. Tema context ve toggle YOK."
+    },
+    {
+      "id": "US-003",
+      "title": "Tema Değiştirme (Açık/Koyu)",
+      "description": "ThemeContext (React Context, tema state, toggle fonksiyonu, localStorage persist), useTheme hook, ThemeToggle bileşeni (güneş/ay ikonu, aria-label), CSS değişkenleri ile açık/koyu tema renkleri, prefers-reduced-motion desteği, koyu tema kontrast >= 4.5:1 WCAG AA uyumu.",
+      "acceptanceCriteria": [
+        "Tema toggle butonu açık/koyu arasında geçiş yapar",
+        "Tema tercihi localStorage'da 'sayac_theme' olarak saklanır",
+        "Koyu temada tüm renkler WCAG AA >= 4.5:1 kontrast oranını karşılar",
+        "prefers-reduced-motion aktifse animasyonlar devre dışı",
+        "Tests pass ve Typecheck passes"
+      ],
+      "depends_on": ["US-001"],
+      "screens": ["a4af303ce7ce4e3c91f848afd432bf61"],
+      "scope_files": [
+        "src/context/ThemeContext.tsx",
+        "src/hooks/useTheme.ts",
+        "src/components/ThemeToggle.tsx"
+      ],
+      "shared_files": ["src/types/index.ts", "src/utils/storage.ts"],
+      "scope_description": "Tema context, hook ve toggle bileşeni. Counter/History bileşenleri YOK."
+    },
+    {
+      "id": "US-004",
+      "title": "Entegrasyon ve Ana Uygulama",
+      "description": "App.tsx — ThemeContext provider, CounterDisplay + CounterControls + HistoryPanel + ThemeToggle birleştirme, tema uygulama (className dark:, CSS variables), window.app state ekspo etme (testing/dogfood), main.tsx router yok (SPA), responsive layout (max-w-md, 320px-1920px), Lighthouse >= 90 hedefi için optimizasyon.",
+      "acceptanceCriteria": [
+        "App.tsx tüm bileşenleri birleştirir ve çalışır",
+        "Açık tema varsayılan, koyu tema toggle ile değişir",
+        "320px mobil ve 1920px masaüstünde responsive çalışır",
+        "window.app state doğru expose edilir",
+        "Tests pass, Typecheck passes ve Build başarılı"
+      ],
+      "depends_on": ["US-002", "US-003"],
+      "screens": ["1cb7a3e1415d43869137299e073b014b"],
+      "scope_files": [
+        "src/App.tsx",
+        "src/main.tsx"
+      ],
+      "shared_files": ["src/components/CounterDisplay.tsx", "src/components/CounterControls.tsx", "src/components/HistoryPanel.tsx", "src/components/ThemeToggle.tsx", "src/context/ThemeContext.tsx", "src/hooks/useCounter.ts", "src/hooks/useHistory.ts", "src/hooks/useTheme.ts"],
+      "scope_description": "App.tsx ve main.tsx entegrasyonu. Diğer dosyalar sadece shared_files."
+    }
+  ],
+  "SCREEN_MAP": [
+    {
+      "screenId": "1cb7a3e1415d43869137299e073b014b",
+      "name": "SAYAÇ-44664 PRD",
+      "type": "landing",
+      "description": "Proje tanıtım ve başlangıç ekranı",
+      "stories": ["US-004"]
+    },
+    {
+      "screenId": "c4366713bcf14dd494c8e978d19914ff",
+      "name": "Boş Geçmiş Durumu",
+      "type": "empty-state",
+      "description": "Geçmiş verisi olmadığında gösterilen boş durum ekranı",
+      "stories": ["US-002"]
+    },
+    {
+      "screenId": "0f6a744675b2419882f316a7e1c803f9",
+      "name": "Ana Sayfa (Açık Tema)",
+      "type": "home",
+      "description": "Uygulama ana sayfası, açık tema",
+      "stories": ["US-002"]
+    },
+    {
+      "screenId": "a4af303ce7ce4e3c91f848afd432bf61",
+      "name": "Koyu Tema Görünümü",
+      "type": "home",
+      "description": "Ana sayfanın koyu tema alternatifi",
+      "stories": ["US-003"]
+    }
+  ]
+}
